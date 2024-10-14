@@ -10,6 +10,9 @@ export const ProfileCard = ({
   role,
 }) => {
 
+  console.log(image_url);
+  
+
   return (
     <>
       <div className="max-w-2xl mx-auto p-6 bg-white shadow-md rounded-md">
