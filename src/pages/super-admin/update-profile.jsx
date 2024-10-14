@@ -9,10 +9,8 @@ import { toast } from "react-toastify";
 export const ProfileEditPage = () => {
   const navigate = useNavigate();
   const { data, isLoading, isError, error } = useGetProfile();
-
   const updateProfile = useUpdateProfile();
-  const { mutate } = useUpdateProfile();
-
+  
   // Form ma'lumotlarini boshida bo'sh qilib olamiz
   const [formData, setFormData] = useState({
     first_name: "",
@@ -22,7 +20,6 @@ export const ProfileEditPage = () => {
     email: "",
     image_url: "", // Boshqa joyga URL saqlash
   });
-  console.log();
 
   const [selectedFile, setSelectedFile] = useState(null); // Yuklangan faylni saqlash
   const [uploading, setUploading] = useState(false); // Fayl yuklanayotganligini kuzatish
@@ -77,9 +74,10 @@ export const ProfileEditPage = () => {
 
       // Serverdan qaytayotgan URL to'g'ri formatdaligini tekshirish
       if (response.data && response.data.Url) {
-        // 'Url' maydonini tekshirish
+        // URL'ni HTTPS ga o'zgartirish
+        const httpsUrl = response.data.Url.replace(/^http:\/\//i, 'https://');
         setUploading(false);
-        return response.data.Url; // Rasm URL qaytariladi
+        return httpsUrl; // Rasm URL qaytariladi
       } else {
         throw new Error("Rasm URL mavjud emas");
       }
@@ -109,7 +107,7 @@ export const ProfileEditPage = () => {
 
       await updateProfile.mutateAsync(updatedFormData, {
         onSuccess: () => {
-          toast.success("profile o'zgartirildi!");
+          toast.success("Profile o'zgartirildi!");
         },
       }); // FormData bilan jo'natish
       navigate(-1);
