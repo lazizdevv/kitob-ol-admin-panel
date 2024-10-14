@@ -15,7 +15,7 @@ export const EditProfileCard = ({
         <form onSubmit={handleSubmit} className="space-y-2">
           {/* Rasm ko'rsatish */}
           {formData.image_url && (
-            <div className="">
+            <div>
               <img
                 src={formData.image_url}
                 alt="Profil rasmi"
