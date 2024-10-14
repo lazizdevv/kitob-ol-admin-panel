@@ -1,4 +1,5 @@
 import React from "react";
+import { PhoneNumberInput } from "../phone-number-card/phone-number-card"; // Telefon raqami input komponentini import qilish
 
 export const EditProfileCard = ({
   formData,
@@ -64,17 +65,11 @@ export const EditProfileCard = ({
               required
             />
           </div>
-          <div>
-            <label className="font-medium">Telefon raqam:</label>
-            <input
-              type="text"
-              name="phone_number"
-              value={formData.phone_number}
-              onChange={handleChange}
-              className="border border-gray-300 p-2 rounded-md w-full"
-              required
-            />
-          </div>
+          {/* Telefon raqami inputini joylashtirish */}
+          <PhoneNumberInput 
+            value={formData.phone_number} 
+            onChange={(newValue) => handleChange({ target: { name: "phone_number", value: newValue } })} 
+          />
           <div>
             <label className="font-medium">Email:</label>
             <input

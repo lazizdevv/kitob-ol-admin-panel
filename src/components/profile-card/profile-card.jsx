@@ -1,5 +1,11 @@
 import React from "react";
 
+const formatPhoneNumber = (phone) => {
+  if (!phone) return "Ma'lumot yo'q";
+  // Telefon raqamini to'g'ri formatda ko'rsatish
+  return phone.replace(/(\+\d{3})(\d{2})(\d{3})(\d{2})(\d{2})/, "$1 $2-$3-$4-$5");
+};
+
 export const ProfileCard = ({
   date_of_birth,
   email,
@@ -9,9 +15,7 @@ export const ProfileCard = ({
   image_url,
   role,
 }) => {
-
   console.log(image_url);
-  
 
   return (
     <>
@@ -36,7 +40,7 @@ export const ProfileCard = ({
           </div>
           <div className="flex gap-3 items-center border p-3">
             <label className="font-medium">Telefon raqam:</label>
-            <p className="text-gray-700">{phone_number || "Ma'lumot yo'q"}</p>
+            <p className="text-gray-700">{formatPhoneNumber(phone_number)}</p>
           </div>
           <div className="flex gap-3 items-center border p-3">
             <label className="font-medium">Email:</label>
