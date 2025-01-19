@@ -50,7 +50,7 @@ export const CitiesList = () => {
           dataIndex: ["name", "ru"],
         },
         {
-          // responsive: ["md"],
+          responsive: ["md"],
           title: "Nom-EN",
           key: "id",
           dataIndex: ["name", "en"],
