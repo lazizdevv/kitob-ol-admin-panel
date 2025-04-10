@@ -103,11 +103,6 @@ export const superAdminRoutes = [
 
 export const superMenuItems = [
   {
-    key: "/admin/banners",
-    icon: <PictureOutlined />,
-    label: "Bannerlar",
-  },
-  {
     key: "/admin/admin-create",
     icon: <UserAddOutlined />,
     label: "Admin Yaratish",
@@ -125,6 +120,11 @@ export const superMenuItems = [
 ];
 
 export const menuItems = [
+  {
+    key: "/admin/banners",
+    icon: <PictureOutlined />,
+    label: "Bannerlar",
+  },
   {
     key: "/admin/categories",
     icon: <AppstoreOutlined />,
