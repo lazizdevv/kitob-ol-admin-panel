@@ -11,7 +11,6 @@ import { useDeleteById } from "../../service/mutation/useDeleteById";
 import { publishersEndPoints } from "../../config/endpoints";
 
 export const PublisherCard = ({ publisher }) => {
-  const [status, setStatus] = useState(publisher.status === "true");
   const { mutate, isPending: changeLoading } = useChangeStatus();
 
   const [confirmVisible, setConfirmVisible] = useState(false);
@@ -24,22 +23,6 @@ export const PublisherCard = ({ publisher }) => {
     publishersEndPoints.list,
     false
   );
-
-  const handleStatusChange = (checked) => {
-    setStatus(checked);
-    mutate(
-      { id: publisher.id, status: checked },
-      {
-        onSuccess: () => {
-          message.success("Status muvaffaqiyatli o'zgartirildi!");
-        },
-        onError: () => {
-          message.error("Xatolik yuz berdi, qayta urinib ko'ring!");
-          setStatus(!checked);
-        },
-      }
-    );
-  };
 
   const handleDelete = () => {
     setConfirmVisible(true);
@@ -69,8 +52,27 @@ export const PublisherCard = ({ publisher }) => {
               label: (
                 <Tooltip title="status o'zgartirish">
                   <Switch
-                    checked={status}
-                    onChange={handleStatusChange}
+                    defaultValue={publisher?.status}
+                    checked={publisher?.status === "true"}
+                    checkedChildren="Faol"
+                    unCheckedChildren="NoFaol"
+                    onChange={(checked) => {
+                      mutate(
+                        { id: publisher.id, status: checked },
+                        {
+                          onSuccess: () => {
+                            message.success(
+                              "Status muvaffaqiyatli o'zgartirildi!"
+                            );
+                          },
+                          onError: () => {
+                            message.error(
+                              "Xatolik yuz berdi, qayta urinib ko'ring!"
+                            );
+                          },
+                        }
+                      );
+                    }}
                     loading={changeLoading}
                   />
                 </Tooltip>
