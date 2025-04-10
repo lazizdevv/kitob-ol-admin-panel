@@ -51,8 +51,8 @@ export const PublisherDetail = () => {
   const backLink = `/admin/publishers`;
 
   return (
-    <>
-      <div className="mb-5">
+    <Flex className="p-1" vertical>
+      <div className="mb-5 border w-fit">
         <Link to={backLink}>
           <Button className="" type="primary" icon={<ArrowLeftOutlined />}>
             ortga
@@ -118,6 +118,6 @@ export const PublisherDetail = () => {
           </Card>
         </Col>
       </Row>
-    </>
+    </Flex>
   );
 };
