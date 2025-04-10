@@ -36,6 +36,7 @@ import { Translator } from "../pages/translators/translator";
 import { TranslatorUpdate } from "../pages/translators/translator-update";
 import { Vacancies } from "../pages/vacancies/vacancies";
 import { VacanciesDetail } from "../pages/vacancies/vacancies-detail";
+import { Banners } from "../pages/banners/banners";
 
 import {
   UserOutlined,
@@ -49,6 +50,7 @@ import {
   UserAddOutlined,
   TeamOutlined,
   TranslationOutlined,
+  PictureOutlined,
 } from "@ant-design/icons";
 
 export const publicRoutes = [
@@ -89,6 +91,7 @@ export const adminRoutes = [
   { path: "translator", component: <Translator /> },
   { path: "create-translator", component: <CreateTranslator /> },
   { path: "translator-update/:id", component: <TranslatorUpdate /> },
+  { path: "banners", component: <Banners /> },
 ];
 
 export const superAdminRoutes = [
@@ -99,6 +102,11 @@ export const superAdminRoutes = [
 ];
 
 export const superMenuItems = [
+  {
+    key: "/admin/banners",
+    icon: <PictureOutlined />,
+    label: "Bannerlar",
+  },
   {
     key: "/admin/admin-create",
     icon: <UserAddOutlined />,

@@ -48,7 +48,7 @@ export const publishersEndPoints = {
   get: "/publishers/get",
   delete: "/auth/admin/publisher/delete",
   list: "/publishers/list",
-  status:"/auth/admin/publisher/status/change"
+  status: "/auth/admin/publisher/status/change",
 };
 
 export const tarnslatorsEndPoints = {
@@ -88,4 +88,12 @@ export const adminEndPoints = {
     email: "/auth/sms/password/forgot/email",
     phone: "/auth/sms/password/forgot/phone",
   },
+};
+
+export const bannersEndPoints = {
+  get: "/banners/get",
+  create: "/banners/create",
+  delete: "/banners/delete",
+  update: "/banners/update",
+  list: "/banners/list",
 };

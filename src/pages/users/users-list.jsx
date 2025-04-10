@@ -1,44 +1,34 @@
 import React, { useState } from "react";
-import { Pagination, List, Flex, Spin, Empty, Table } from "antd";
+import { Pagination, Flex, Table, Select } from "antd";
 import { UserCard } from "./userCard";
 import { useGetList } from "../../service/query/useGetList";
 import { usersEndPoints } from "../../config/endpoints";
 import { LogoIcon } from "../../assets/LogoIcon";
+import { useDebounce } from "../../hooks/useDebounce/useDebounce";
+import { SettingOutlined } from "@ant-design/icons";
 
 export const AllUsers = () => {
   const [limit, setLimit] = useState(10);
   const [currentPage, setCurrentPage] = useState(1);
   const offset = (currentPage - 1) * limit;
-  const { data, isLoading, isError, error } = useGetList(
+  const [searchByCategory, setSearchByCategory] = useState("");
+  const { data, isLoading } = useGetList(
     usersEndPoints.list,
-    { limit, offset, role: "user" },
+    { limit, offset, role: "user", name: useDebounce(searchByCategory, 500) },
     false
   );
 
-  if (isLoading)
-    return (
-      <Flex align="center" justify="center" className="h-full">
-        <Spin />
-      </Flex>
-    );
-  if (isError) return <div>Xatolik: {error?.message}</div>;
-
   const totalCount = data?.count || 0;
-
-  if (totalCount == 0) {
-    return (
-      <Flex align="center" justify="center" className="h-full">
-        <Empty />
-      </Flex>
-    );
-  }
-  console.log(data);
 
   return (
     <Flex vertical className="py-4">
       <Table
+        loading={isLoading}
         bordered
-        dataSource={data?.users}
+        dataSource={data?.users.map((item) => ({
+          ...item,
+          key: item.id,
+        }))}
         size="small"
         pagination={false}
         title={() => (
@@ -46,7 +36,48 @@ export const AllUsers = () => {
             <h2 className="md:text-xl font-bold text-center md:text-left">
               Userlar Ro'yxati
             </h2>
-            <p className="text-lg">
+            <p className="text-lg lg:hidden inline-block">
+              <span className="md:text-xl font-bold">Jami: </span> {totalCount}
+            </p>
+            <Select
+              optionLabelProp="value"
+              loading={isLoading}
+              className="w-full md:w-1/3"
+              placeholder="Qidirish"
+              showSearch
+              allowClear
+              optionFilterProp="searchText"
+              filterOption={(input, option) =>
+                (option?.searchText ?? "")
+                  .toLowerCase()
+                  .includes(input.toLowerCase())
+              }
+              onChange={(value) => setSearchByCategory(value)}
+              options={data?.users?.map((user) => ({
+                label: (
+                  <Flex align="center" gap={12}>
+                    {user.image_url ? (
+                      <img
+                        src={user?.image_url}
+                        className="w-10 h-10 rounded-full object-cover border-2 border-dark"
+                      />
+                    ) : (
+                      <Flex
+                        align="center"
+                        justify="center"
+                        className="w-10 h-10 rounded-full object-cover border-2 border-dark p-1"
+                      >
+                        <LogoIcon />
+                      </Flex>
+                    )}
+                    {`${user.first_name || ""} ${user.last_name || ""}`}
+                  </Flex>
+                ),
+                value: user?.first_name, // qidirish uchun qiymat
+                searchText: `${user.first_name} ${user.last_name}`, // search uchun matn
+              }))}
+            />
+            <p className="text-lg hidden lg:inline-block">
               <span className="md:text-xl font-bold">Jami: </span> {totalCount}
             </p>
           </Flex>
@@ -80,7 +111,7 @@ export const AllUsers = () => {
           },
           {
             width: "0",
-            title: "Harakat",
+            title: <SettingOutlined />,
             render: (text, record) => <UserCard user={record} />,
           },
         ]}
