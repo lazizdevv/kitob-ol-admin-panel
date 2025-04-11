@@ -1,5 +1,14 @@
 import { useState } from "react";
-import { Button, Dropdown, Flex, Form, Input, Modal, Table } from "antd";
+import {
+  Button,
+  Dropdown,
+  Flex,
+  Form,
+  Input,
+  Modal,
+  Table,
+  Upload,
+} from "antd";
 import {
   DeleteOutlined,
   EditOutlined,
@@ -7,6 +16,7 @@ import {
   MoreOutlined,
   PlusCircleOutlined,
   SettingOutlined,
+  UploadOutlined,
 } from "@ant-design/icons";
 
 import { bannersEndPoints } from "../../config/endpoints";
@@ -15,6 +25,7 @@ import { useCreate } from "../../service/mutation/useCreate";
 import { useUpdateById } from "../../service/mutation/useUpdateById";
 import { useGetById } from "../../service/query/useGetById";
 import { useDeleteById } from "../../service/mutation/useDeleteById";
+import { useUploadPhotos } from "../../service/mutation/uploads/useUploadPhoto";
 
 export const Banners = () => {
   const [form] = Form.useForm();
@@ -49,6 +60,8 @@ export const Banners = () => {
   const { mutate: bannerDelete, isPending: bannerDeletePending } =
     useDeleteById(bannersEndPoints.delete, bannersEndPoints.list);
 
+  const { mutate: uploadFile, isPending: isUploadFile } = useUploadPhotos();
+
   return (
     <>
       <Table
@@ -81,7 +94,7 @@ export const Banners = () => {
         columns={[
           {
             title: "Rasm",
-            dataIndex: "img_url",
+            dataIndex: "img_url_en",
             render: (text) => (
               <img src={text} alt="Banner" style={{ width: 100, height: 50 }} />
             ),
@@ -202,7 +215,7 @@ export const Banners = () => {
         title="Banner Qo'shish"
         open={isModalOpen}
         footer={false}
-        maskClosable={true}
+        maskClosable={false}
         onCancel={() => setIsModalOpen(false)}
         loading={isPending || updatePending}
         width={900}
@@ -221,14 +234,91 @@ export const Banners = () => {
             }
           }}
         >
-          <Form.Item label="Rasm" name="img_url">
-            <Input placeholder="Rasm URL" />
-          </Form.Item>
+          <Flex justify="space-between" gap={12}>
+            <Form.Item label="Rasm Eng" name="img_url_en">
+              <Upload
+                customRequest={({ file }) => {
+                  uploadFile(file, {
+                    onSuccess: (data) => {
+                      console.log("Serverdan kelgan javob:", data);
+
+                      if (data) {
+                        form.setFieldsValue({ img_url_en: data?.url });
+                      }
+                    },
+                    onError: () => {
+                      message.error("Rasm yuklashda xatolik yuz berdi!");
+                    },
+                  });
+                }}
+                showUploadList={false}
+                accept="image/*"
+              >
+                <Button
+                  loading={isUploadFile}
+                  icon={<UploadOutlined />}
+                  children={"yuklash"}
+                />
+              </Upload>
+            </Form.Item>
+            <Form.Item label="Rasm Ru" name="img_url_ru">
+              <Upload
+                customRequest={({ file }) => {
+                  uploadFile(file, {
+                    onSuccess: (data) => {
+                      console.log("Serverdan kelgan javob:", data);
+
+                      if (data) {
+                        form.setFieldsValue({ img_url_ru: data?.url });
+                      }
+                    },
+                    onError: () => {
+                      message.error("Rasm yuklashda xatolik yuz berdi!");
+                    },
+                  });
+                }}
+                showUploadList={false}
+                accept="image/*"
+              >
+                <Button
+                  loading={isUploadFile}
+                  icon={<UploadOutlined />}
+                  children={"yuklash"}
+                />
+              </Upload>
+            </Form.Item>
+            <Form.Item label="Rasm UZ" name="img_url_uz">
+              <Upload
+                customRequest={({ file }) => {
+                  uploadFile(file, {
+                    onSuccess: (data) => {
+                      console.log("Serverdan kelgan javob:", data);
+
+                      if (data) {
+                        form.setFieldsValue({ img_url_uz: data?.url });
+                      }
+                    },
+                    onError: () => {
+                      message.error("Rasm yuklashda xatolik yuz berdi!");
+                    },
+                  });
+                }}
+                showUploadList={false}
+                accept="image/*"
+              >
+                <Button
+                  loading={isUploadFile}
+                  icon={<UploadOutlined />}
+                  children={"yuklash"}
+                />
+              </Upload>
+            </Form.Item>
+          </Flex>
           <Form.Item label="URL" name="url">
             <Input placeholder="URL" />
           </Form.Item>
-          <Form.Item>
-            <Button block type="primary" htmlType="submit">
+          <Form.Item className="text-center">
+            <Button className="w-1/2" type="primary" htmlType="submit">
               Saqlash
             </Button>
           </Form.Item>
@@ -243,10 +333,26 @@ export const Banners = () => {
         onCancel={() => setIsModalView(false)}
         loading={editDataLoading}
         width={900}
-        centered
       >
         <Flex vertical gap={12}>
-          <img src={editData?.img_url} alt="Banner" />
+          <Flex justify="space-between" wrap gap={12}>
+            <img
+              className="w-full object-contain border"
+              src={editData?.img_url_en}
+              alt="Banner"
+            />
+            <img
+              className="w-full object-contain border"
+              src={editData?.img_url_ru}
+              alt="Banner"
+            />
+            <img
+              className="w-full object-contain border"
+              src={editData?.img_url_uz}
+              alt="Banner"
+            />
+          </Flex>
+
           <Flex direction="column" gap={12}>
             <h1 className="text-lg font-bold">Banner URL:</h1>
             <p className="text-base">

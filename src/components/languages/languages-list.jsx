@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Empty, Flex, Pagination, Spin, Table } from "antd";
+import { Flex, Table } from "antd";
 import { LanguagesCard } from "./languages-card";
 import { useGetList } from "../../service/query/useGetList";
 import { languagesEndPoints } from "../../config/endpoints";
@@ -8,34 +8,22 @@ export const LanguagesList = () => {
   const [limit, setLimit] = useState(10);
   const [currentPage, setCurrentPage] = useState(1);
   const offset = (currentPage - 1) * limit;
-  const { data, error, isLoading } = useGetList(languagesEndPoints.list, {
+  const { data, isLoading } = useGetList(languagesEndPoints.list, {
     limit,
     offset,
   });
 
   const totalCount = data?.Count || 0;
-  if (isLoading)
-    return (
-      <Flex justify="center" className="pt-20">
-        <Spin />
-      </Flex>
-    );
-  if (totalCount == 0 || undefined)
-    return (
-      <Flex justify="center" className="pt-20">
-        <Empty />
-      </Flex>
-    );
-  if (error) return <p>Xatolik: {error.message}</p>;
-
-  const currentlanguages = data.languages?.languages || [];
 
   return (
     <Table
       size="small"
       bordered
-      pagination={false}
-      dataSource={currentlanguages}
+      loading={isLoading}
+      dataSource={data?.languages?.languages.map((item) => ({
+        ...item,
+        key: item.id,
+      }))}
       title={() => (
         <Flex
           justify="space-between"
@@ -75,26 +63,28 @@ export const LanguagesList = () => {
           ),
         },
       ]}
-      footer={() => (
-        <Flex justify="center" className="mt-4">
-          <Pagination
-            align="start"
-            current={currentPage}
-            total={totalCount}
-            pageSize={limit}
-            onChange={(page) => {
-              setCurrentPage(page);
-            }}
-            showSizeChanger
-            pageSizeOptions={[5, 10, 20, 50, 75, 100]}
-            onShowSizeChange={(current, size) => {
-              setLimit(size);
-              setCurrentPage(current);
-            }}
-            showQuickJumper
-          />
-        </Flex>
-      )}
+      pagination={{
+        pageSize: limit,
+        showSizeChanger: true,
+        showQuickJumper: true,
+        hideOnSinglePage: true,
+        position: ["bottomCenter"],
+        size: "default",
+        current: currentPage,
+        total: totalCount,
+        onChange: (page) => {
+          setCurrentPage(page);
+        },
+        onShowSizeChange: (current, size) => {
+          setLimit(size);
+          setCurrentPage(current);
+        },
+        showQuickJumper: true,
+        responsive: true,
+        defaultPageSize: limit,
+        pageSizeOptions: [5, 10, 20, 50, 75, 100],
+        hideOnSinglePage: true,
+      }}
     />
   );
 };

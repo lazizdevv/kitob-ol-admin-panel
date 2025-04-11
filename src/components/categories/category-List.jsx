@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Empty, Flex, Pagination, Spin, Table } from "antd";
+import { Flex, Table } from "antd";
 import { CategoryCard } from "./category-card";
 import { useGetList } from "../../service/query/useGetList";
 import { categoriesEndPoints } from "../../config/endpoints";
@@ -15,30 +15,18 @@ export const CategoriesList = () => {
 
   const totalCount = data?.Count || 0;
 
-  if (isLoading)
-    return (
-      <Flex justify="center" align="center" className="p-20">
-        <Spin />
-      </Flex>
-    );
-
-  if (totalCount == 0)
-    return (
-      <Flex justify="center" align="center" className="pt-20">
-        <Empty />
-      </Flex>
-    );
-
   if (error) return <p>Xatolik: {error.message}</p>;
-  const currentCategories = data.Categories?.categories || [];
 
   return (
     <Table
       size="small"
       tableLayout="auto"
       bordered
-      dataSource={currentCategories}
-      pagination={false}
+      loading={isLoading}
+      dataSource={data?.Categories?.categories?.map((item) => ({
+        ...item,
+        key: item.id,
+      }))}
       title={() => (
         <Flex
           align="center"
@@ -76,25 +64,24 @@ export const CategoriesList = () => {
           ),
         },
       ]}
-      footer={() => (
-        <Flex justify="center" align="center" className="mt-4">
-          <Pagination
-            current={currentPage}
-            total={totalCount}
-            pageSize={limit}
-            onChange={(page) => {
-              setCurrentPage(page);
-            }}
-            showSizeChanger
-            pageSizeOptions={[5, 10, 20, 50, 75, 100]}
-            onShowSizeChange={(current, size) => {
-              setLimit(size);
-              setCurrentPage(current);
-            }}
-            showQuickJumper
-          />
-        </Flex>
-      )}
+      pagination={{
+        defaultPageSize: limit,
+        pageSize: limit,
+        current: currentPage,
+        total: totalCount,
+        showSizeChanger: true,
+        position: ["bottomCenter"],
+        size: "default",
+        pageSizeOptions: [5, 10, 20, 50, 75, 100],
+        onShowSizeChange: (current, size) => {
+          setLimit(size);
+          setCurrentPage(current);
+        },
+        onChange: (page) => {
+          setCurrentPage(page);
+        },
+        showQuickJumper: true,
+      }}
     />
   );
 };

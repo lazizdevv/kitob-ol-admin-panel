@@ -40,7 +40,10 @@ export const AdminChange = () => {
       <Table
         bordered
         size="small"
-        dataSource={data?.users}
+        dataSource={data?.users.map((item) => ({
+          ...item,
+          key: item.id,
+        }))}
         pagination={false}
         title={() => (
           <Flex

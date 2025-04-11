@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Spin, Pagination, message, Flex, Table, Button, Empty } from "antd";
+import { Flex, Table, Button } from "antd";
 import { useGetList } from "../../service/query/useGetList";
 import { vacanciesEndPoints } from "../../config/endpoints";
 import { Link } from "react-router-dom";
@@ -10,47 +10,23 @@ export const VacanciesList = () => {
   const [limit, setLimit] = useState(10);
   const offset = (currentPage - 1) * limit;
 
-  const { data, isLoading, isError, error } = useGetList(
-    vacanciesEndPoints.list,
-    {
-      limit: limit,
-      offset,
-    }
-  );
+  const { data, isLoading } = useGetList(vacanciesEndPoints.list, {
+    limit: limit,
+    offset,
+  });
 
   const totalCount = data?.count;
 
-  const handlePageChange = (page, limit) => {
-    setCurrentPage(page);
-    setLimit(limit);
-  };
-
-  if (isError) {
-    message.error("Vakansiyalar yuklanmadi. Iltimos qayta urinib ko'ring.");
-    console.error("Error fetching vacancies:", error);
-  }
-
-  if (isLoading)
-    return (
-      <Flex justify="center" align="center" className="h-full pt-20">
-        <Spin />
-      </Flex>
-    );
-
-  if (totalCount == 0 || undefined)
-    return (
-      <Flex justify="center" align="center" className="pt-20">
-        <Empty />
-      </Flex>
-    );
-
   return (
     <Table
+      loading={isLoading}
       className="w-full"
       size="small"
       bordered
-      dataSource={data?.vacancies || []}
-      pagination={false}
+      dataSource={data?.vacancies.map((item) => ({
+        ...item,
+        key: item.id,
+      }))}
       title={() => (
         <Flex
           justify="space-between"
@@ -99,19 +75,28 @@ export const VacanciesList = () => {
           ),
         },
       ]}
-      footer={() => (
-        <Flex justify="center" className="mt-4">
-          <Pagination
-            current={currentPage}
-            pageSize={limit}
-            total={totalCount}
-            onChange={handlePageChange}
-            showSizeChanger
-            showQuickJumper
-            pageSizeOptions={["5", "10", "20", "50", "100"]}
-          />
-        </Flex>
-      )}
+      pagination={{
+        pageSize: limit,
+        showSizeChanger: true,
+        showQuickJumper: true,
+        hideOnSinglePage: true,
+        position: ["bottomCenter"],
+        size: "default",
+        current: currentPage,
+        total: totalCount,
+        onChange: (page) => {
+          setCurrentPage(page);
+        },
+        onShowSizeChange: (current, size) => {
+          setLimit(size);
+          setCurrentPage(current);
+        },
+        showQuickJumper: true,
+        responsive: true,
+        defaultPageSize: limit,
+        pageSizeOptions: [5, 10, 20, 50, 75, 100],
+        hideOnSinglePage: true,
+      }}
     />
   );
 };

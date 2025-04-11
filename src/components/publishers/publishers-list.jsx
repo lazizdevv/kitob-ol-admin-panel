@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Spin, Alert, Pagination, Select, Flex, Table } from "antd";
+import { Select, Flex, Table } from "antd";
 import { PublisherCard } from "./publishers-card";
 import { useGetList } from "../../service/query/useGetList";
 import { publishersEndPoints } from "../../config/endpoints";
@@ -14,40 +14,24 @@ export const PublishersList = () => {
   const [status, setStatus] = useState("active");
   const offset = (currentPage - 1) * limit;
 
-  const { data, isLoading, isError, error } = useGetList(
-    publishersEndPoints.list,
-    {
-      type,
-      status,
-      limit,
-      offset,
-    }
-  );
+  const { data, isLoading } = useGetList(publishersEndPoints.list, {
+    type,
+    status,
+    limit,
+    offset,
+  });
 
-  if (isLoading) {
-    return (
-      <Flex justify="center" className="pt-20">
-        <Spin />
-      </Flex>
-    );
-  }
-
-  if (isError) {
-    return (
-      <Alert message="Xato" description={error.message} type="error" showIcon />
-    );
-  }
   const totalCount = data?.count || 0;
-  const currentPublishers = data.publishers || [];
-
-  console.log(currentPublishers);
 
   return (
     <Table
       bordered
-      pagination={false}
+      loading={isLoading}
       size="small"
-      dataSource={currentPublishers}
+      dataSource={data?.publishers?.map((item) => ({
+        ...item,
+        key: item.id,
+      }))}
       title={() => (
         <Flex
           justify="space-between"
@@ -136,23 +120,26 @@ export const PublishersList = () => {
           render: (text, record) => <PublisherCard publisher={record} />,
         },
       ]}
-      footer={() => (
-        <Flex justify="center" className="mt-4">
-          <Pagination
-            current={currentPage}
-            total={totalCount}
-            pageSize={limit}
-            onChange={(page) => setCurrentPage(page)}
-            showSizeChanger
-            pageSizeOptions={[5, 10, 20, 50, 75, 100]}
-            onShowSizeChange={(current, size) => {
-              setLimit(size);
-              setCurrentPage(current);
-            }}
-            showQuickJumper
-          />
-        </Flex>
-      )}
+      pagination={{
+        pageSize: limit,
+        showSizeChanger: true,
+        showQuickJumper: true,
+        position: ["bottomCenter"],
+        size: "default",
+        current: currentPage,
+        total: totalCount,
+        onChange: (page) => {
+          setCurrentPage(page);
+        },
+        onShowSizeChange: (current, size) => {
+          setLimit(size);
+          setCurrentPage(current);
+        },
+        showQuickJumper: true,
+        responsive: true,
+        defaultPageSize: limit,
+        pageSizeOptions: [5, 10, 20, 50, 75, 100],
+      }}
     />
   );
 };

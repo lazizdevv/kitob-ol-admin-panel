@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Empty, Flex, Pagination, Spin, Table } from "antd";
+import { Flex, Table } from "antd";
 import { AuthorsCard } from "./authors-card";
 import { useGetList } from "../../service/query/useGetList";
 import { authorsEndPoints } from "../../config/endpoints";
@@ -13,29 +13,19 @@ export const AuthorsList = () => {
     offset,
   });
 
-  if (isLoading)
-    return (
-      <Flex justify="center" align="center" className="pt-10">
-        <Spin />
-      </Flex>
-    );
   if (error) return <p>Xatolik: {error?.message}</p>;
 
   const totalCount = data?.count || 0;
-
-  if (totalCount == 0 || undefined)
-    return (
-      <Flex justify="center" align="center" className="pt-20">
-        <Empty />
-      </Flex>
-    );
 
   return (
     <Table
       size="small"
       bordered
-      dataSource={data?.authors}
-      pagination={false}
+      loading={isLoading}
+      dataSource={data?.authors.map((item) => ({
+        ...item,
+        key: item.id,
+      }))}
       title={() => (
         <Flex
           className="md:p-2"
@@ -70,25 +60,23 @@ export const AuthorsList = () => {
           ),
         },
       ]}
-      footer={() => (
-        <Flex justify="center" align="center" className="mt-4">
-          <Pagination
-            current={currentPage}
-            total={totalCount}
-            pageSize={limit}
-            onChange={(page) => {
-              setCurrentPage(page);
-            }}
-            showSizeChanger
-            showQuickJumper
-            pageSizeOptions={[5, 10, 20, 50, 75, 100]}
-            onShowSizeChange={(current, size) => {
-              setLimit(size);
-              setCurrentPage(current);
-            }}
-          />
-        </Flex>
-      )}
+      pagination={{
+        current: currentPage,
+        total: totalCount,
+        pageSize: limit,
+        showSizeChanger: true,
+        showQuickJumper: true,
+        pageSizeOptions: [5, 10, 20, 50, 75, 100],
+        onShowSizeChange: (current, size) => {
+          setLimit(size);
+          setCurrentPage(current);
+        },
+        onChange: (page) => {
+          setCurrentPage(page);
+        },
+        position: ["bottomCenter"],
+        size: "default",
+      }}
     />
   );
 };
